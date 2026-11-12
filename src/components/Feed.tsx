@@ -201,11 +201,10 @@ export default function Feed({ videoIds, startIndex = 0, title = "", mode, kind 
     api.play(curId, curEp)
       .then(async (info) => {
         if (!alive) return;
-        const url = playSource(info);
+        const url = playSource(info) || (curEp === 1 ? playSource(detail) : "");
         if (!url) {
-          const keys = info && typeof info === "object" ? Object.keys(info).join(",") : String(info);
-          const vapi = typeof (info as any)?.video_api === "string" ? (info as any).video_api : "";
-          throw new Error(`暂无播放地址（返回字段：${keys || "空"}${vapi ? `；video_api=${vapi.slice(0, 80)}` : ""}）`);
+          const dump = JSON.stringify(info).slice(0, 600);
+          throw new Error(`暂无播放地址：${dump}`);
         }
         // 加密播放列表先自检，把上游 502 的具体原因带到界面上
         if (url.includes("/hlsx?")) {
