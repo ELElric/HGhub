@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { api, cover, fmt, fmtTime, mediaUrl, platform } from "../api";
+import { api, cover, fmt, fmtTime, mediaUrl, platform, playUrlOf } from "../api";
 import type { Detail, Episode, Post, VideoCard } from "../types";
 import { useStore } from "../store";
 import { Avatar, Img, Sheet } from "./ui";
@@ -131,7 +131,7 @@ export default function Feed({ videoIds, startIndex = 0, title = "", mode, kind 
       };
 
   const posterUrl = cover(meta.cover, 900);
-  const hasVideo = kind === "video" || !!post?.video_url;
+  const hasVideo = kind === "video" || !!playUrlOf(post);
   const articleHtml = kind === "post" && !hasVideo ? sanitizeHtml(post?.content || "") : "";
 
   /* 倍速：长按 / 锁定 → 2.0x，否则用基准倍速 */
@@ -201,8 +201,12 @@ export default function Feed({ videoIds, startIndex = 0, title = "", mode, kind 
     api.play(curId, curEp)
       .then((info) => {
         if (!alive) return;
-        if (!info?.video_url) throw new Error("暂无播放地址");
-        setPlayUrls((m) => ({ ...m, [playKey]: info.video_url }));
+        const url = playUrlOf(info);
+        if (!url) {
+          const keys = info && typeof info === "object" ? Object.keys(info).join(",") : String(info);
+          throw new Error(`暂无播放地址（返回字段：${keys || "空"}）`);
+        }
+        setPlayUrls((m) => ({ ...m, [playKey]: url }));
         addHistory(curId);
       })
       .catch((e) => { if (alive) setErr((e as Error).message || "取播放地址失败"); });
@@ -498,7 +502,7 @@ export default function Feed({ videoIds, startIndex = 0, title = "", mode, kind 
               )}
 
               {/* 图文帖：没有视频就给个正文入口 */}
-              {isActive && kind === "post" && !!post && !post.video_url && (
+              {isActive && kind === "post" && !!post && !playUrlOf(post) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                   <button type="button" onClick={() => setPanel("article")}
                     className="flex items-center gap-2 h-11 px-5 rounded-full bg-white/92 text-[#0b0e15] text-[13.5px] font-semibold pressable elev-3">
@@ -585,7 +589,7 @@ export default function Feed({ videoIds, startIndex = 0, title = "", mode, kind 
                 )}
 
                 <button onClick={() => {
-                  const u = kind === "post" ? (posts[curId]?.video_url || meta.title) : `https://huangguoai.com/video/${curId}/`;
+                  const u = kind === "post" ? (playUrlOf(posts[curId]) || meta.title) : `https://huangguoai.com/video/${curId}/`;
                   navigator.clipboard?.writeText(u).then(() => toast("链接已复制", "ok")).catch(() => {});
                 }} className="flex flex-col items-center gap-1 pressable">
                   <ILink size={25} className="text-white tsh" />

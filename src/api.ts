@@ -69,6 +69,17 @@ export const api = {
   follow: (uid: number, on: boolean) => call<unknown>("api_follow", { uid, on }),
 };
 
+/* ── 播放地址兜底：上游字段改名时仍能取到 ───────── */
+export function playUrlOf(info: any): string {
+  if (!info) return "";
+  const cands = [
+    info.video_url, info.video_url_hevc, info.url, info.play_url,
+    info.hls_url, info.m3u8, info.src, info.video?.url, info.data?.video_url,
+  ];
+  for (const c of cands) if (typeof c === "string" && c.trim()) return c.trim();
+  return "";
+}
+
 /* ── 自检：验证 webview → 本地协议 → 上游 的取流链路 ───────── */
 export async function selfTest(): Promise<string> {
   const steps: string[] = [];
