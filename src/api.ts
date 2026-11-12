@@ -80,6 +80,22 @@ export function playUrlOf(info: any): string {
   return "";
 }
 
+/* ── 播放入口：直链 or 加密列表（video_api + key/iv） ───────── */
+const API_ORIGIN = "https://huangguoai.com";
+
+export function playSource(info: any): string {
+  const direct = playUrlOf(info);
+  if (direct) return mediaUrl(direct);
+  const apiUrl = typeof info?.video_api === "string" ? info.video_api.trim() : "";
+  if (!apiUrl) return "";
+  const abs = /^https?:\/\//i.test(apiUrl)
+    ? apiUrl
+    : `${API_ORIGIN}${apiUrl.startsWith("/") ? "" : "/"}${apiUrl}`;
+  const k = encodeURIComponent(info.video_key ?? "");
+  const iv = encodeURIComponent(info.video_iv ?? "");
+  return `${LOCAL}/hlsx?u=${encodeURIComponent(abs)}&k=${k}&iv=${iv}`;
+}
+
 /* ── 自检：验证 webview → 本地协议 → 上游 的取流链路 ───────── */
 export async function selfTest(): Promise<string> {
   const steps: string[] = [];

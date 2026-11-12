@@ -36,12 +36,19 @@ fn cache_put<V: Clone>(map: &Mutex<HashMap<String, V>>, key: String, val: V, max
 /* ───────────────────────── AES ───────────────────────── */
 
 fn aes_cbc_decrypt(data: &[u8]) -> Option<Vec<u8>> {
+    let mut key = [0u8; 16];
+    key.copy_from_slice(IMG_KEY);
+    let mut iv = [0u8; 16];
+    iv.copy_from_slice(IMG_IV);
+    aes_cbc_decrypt_with(&key, &iv, data)
+}
+
+fn aes_cbc_decrypt_with(key: &[u8; 16], iv: &[u8; 16], data: &[u8]) -> Option<Vec<u8>> {
     if data.is_empty() || data.len() % 16 != 0 {
         return None;
     }
-    let cipher = Aes128::new_from_slice(IMG_KEY).ok()?;
-    let mut prev = [0u8; 16];
-    prev.copy_from_slice(IMG_IV);
+    let cipher = Aes128::new_from_slice(key).ok()?;
+    let mut prev = *iv;
     let mut out = Vec::with_capacity(data.len());
     for chunk in data.chunks(16) {
         let mut ct = [0u8; 16];
@@ -146,7 +153,12 @@ pub async fn load_playlist(url: &str, prefix: &str) -> Result<Arc<String>, Strin
     }
     let (_, bytes) = fetch_bytes(url).await?;
     let text = String::from_utf8_lossy(&bytes).to_string();
+    let arc = Arc::new(rewrite_playlist_text(url, &text, prefix));
+    cache_put(&PL_CACHE, url.to_string(), arc.clone(), PL_CACHE_MAX);
+    Ok(arc)
+}
 
+fn rewrite_playlist_text(base: &str, text: &str, prefix: &str) -> String {
     let mut out = String::with_capacity(text.len() + 512);
     for raw in text.lines() {
         let line = raw.trim_end();
@@ -157,20 +169,124 @@ pub async fn load_playlist(url: &str, prefix: &str) -> Result<Arc<String>, Strin
         if line.starts_with('#') {
             if line.starts_with("#EXT-X-KEY") || line.starts_with("#EXT-X-MAP") {
                 // 先把相对 URI 绝对化再改写
-                let absolute = absolutize_uri_in_attr(url, line);
+                let absolute = absolutize_uri_in_attr(base, line);
                 out.push_str(&rewrite_uri_attr(&absolute, prefix));
             } else {
                 out.push_str(line);
             }
         } else {
-            let absolute = absolutize(url, line);
+            let absolute = absolutize(base, line);
             out.push_str(&format!("{prefix}/seg?u={}", enc(&absolute)));
         }
         out.push('\n');
     }
+    out
+}
 
-    let arc = Arc::new(out);
-    cache_put(&PL_CACHE, url.to_string(), arc.clone(), PL_CACHE_MAX);
+/* ─────────────── 加密播放列表（video_api + key/iv） ─────────────── */
+
+fn key16(s: &str) -> Option<[u8; 16]> {
+    let t = s.trim();
+    if t.len() == 32 && t.chars().all(|c| c.is_ascii_hexdigit()) {
+        let mut o = [0u8; 16];
+        for i in 0..16 {
+            o[i] = u8::from_str_radix(&t[i * 2..i * 2 + 2], 16).ok()?;
+        }
+        return Some(o);
+    }
+    if t.len() == 16 {
+        let mut o = [0u8; 16];
+        o.copy_from_slice(t.as_bytes());
+        return Some(o);
+    }
+    None
+}
+
+fn looks_like_m3u8(bytes: &[u8]) -> bool {
+    let head = String::from_utf8_lossy(&bytes[..bytes.len().min(64)]);
+    head.trim_start_matches('\u{feff}').trim_start().starts_with("#EXTM3U")
+}
+
+fn first_string_url(v: &serde_json::Value) -> Option<String> {
+    const KEYS: [&str; 6] = ["video_url", "url", "play_url", "m3u8", "hls_url", "src"];
+    if let Some(o) = v.as_object() {
+        for k in KEYS {
+            if let Some(s) = o.get(k).and_then(|x| x.as_str()) {
+                if s.trim().starts_with("http") {
+                    return Some(s.trim().to_string());
+                }
+            }
+        }
+        for val in o.values() {
+            if let Some(s) = first_string_url(val) {
+                return Some(s);
+            }
+        }
+    }
+    None
+}
+
+/// 新版站点不再直给 video_url：播放列表经 video_api 下发，正文用 video_key/video_iv 做 AES-128-CBC 加密。
+pub async fn load_secret_playlist(
+    api: &str,
+    key: &str,
+    iv: &str,
+    prefix: &str,
+) -> Result<Arc<String>, String> {
+    let cache_key = format!("{api}|{key}|{iv}");
+    if let Some(hit) = PL_CACHE.lock().unwrap().get(&cache_key).cloned() {
+        return Ok(hit);
+    }
+    let (_, bytes) = fetch_bytes(api).await?;
+
+    let mut text: Option<String> = None;
+    if looks_like_m3u8(&bytes) {
+        text = Some(String::from_utf8_lossy(&bytes).to_string());
+    } else if let Ok(v) = serde_json::from_slice::<serde_json::Value>(&bytes) {
+        if let Some(inner) = first_string_url(&v) {
+            let (_, b2) = fetch_bytes(&inner).await?;
+            if looks_like_m3u8(&b2) {
+                text = Some(String::from_utf8_lossy(&b2).to_string());
+            }
+        }
+    }
+
+    if text.is_none() {
+        let mut ivs: Vec<[u8; 16]> = Vec::new();
+        if let Some(v) = key16(iv) {
+            ivs.push(v);
+        }
+        ivs.push([0u8; 16]);
+        if let Some(k) = key16(key) {
+            for v in &ivs {
+                if let Some(d) = aes_cbc_decrypt_with(&k, v, &bytes) {
+                    let d = strip_padding(d);
+                    if looks_like_m3u8(&d) {
+                        text = Some(String::from_utf8_lossy(&d).to_string());
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    let text = text.ok_or_else(|| {
+        let head = bytes
+            .iter()
+            .take(48)
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        format!(
+            "播放列表格式未知：{} 字节，头部 {}, key={} iv={}",
+            bytes.len(),
+            head,
+            key,
+            iv
+        )
+    })?;
+
+    let arc = Arc::new(rewrite_playlist_text(api, &text, prefix));
+    cache_put(&PL_CACHE, cache_key, arc.clone(), PL_CACHE_MAX);
     Ok(arc)
 }
 
@@ -216,6 +332,16 @@ pub async fn handle(path: &str, query: &str, scheme: &str) -> Response<Vec<u8>> 
         .find_map(|kv| kv.strip_prefix("u="))
         .map(dec)
         .unwrap_or_default();
+    let qkey = query
+        .split('&')
+        .find_map(|kv| kv.strip_prefix("k="))
+        .map(dec)
+        .unwrap_or_default();
+    let qiv = query
+        .split('&')
+        .find_map(|kv| kv.strip_prefix("iv="))
+        .map(dec)
+        .unwrap_or_default();
 
     if target.is_empty() {
         return respond(400, "text/plain", b"missing u".to_vec(), "no-store");
@@ -229,6 +355,15 @@ pub async fn handle(path: &str, query: &str, scheme: &str) -> Response<Vec<u8>> 
             Err(e) => respond(502, "text/plain", e.into_bytes(), "no-store"),
         },
         "/hls" => match load_playlist(&target, &prefix).await {
+            Ok(text) => respond(
+                200,
+                "application/vnd.apple.mpegurl",
+                text.as_bytes().to_vec(),
+                "no-store",
+            ),
+            Err(e) => respond(502, "text/plain", e.into_bytes(), "no-store"),
+        },
+        "/hlsx" => match load_secret_playlist(&target, &qkey, &qiv, &prefix).await {
             Ok(text) => respond(
                 200,
                 "application/vnd.apple.mpegurl",

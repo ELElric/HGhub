@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { api, cover, fmt, fmtTime, mediaUrl, platform, playUrlOf } from "../api";
+import { api, cover, fmt, fmtTime, mediaUrl, platform, playSource, playUrlOf } from "../api";
 import type { Detail, Episode, Post, VideoCard } from "../types";
 import { useStore } from "../store";
 import { Avatar, Img, Sheet } from "./ui";
@@ -199,13 +199,21 @@ export default function Feed({ videoIds, startIndex = 0, title = "", mode, kind 
     if (playUrls[playKey]) return;
     let alive = true;
     api.play(curId, curEp)
-      .then((info) => {
+      .then(async (info) => {
         if (!alive) return;
-        const url = playUrlOf(info);
+        const url = playSource(info);
         if (!url) {
           const keys = info && typeof info === "object" ? Object.keys(info).join(",") : String(info);
-          throw new Error(`暂无播放地址（返回字段：${keys || "空"}）`);
+          const vapi = typeof (info as any)?.video_api === "string" ? (info as any).video_api : "";
+          throw new Error(`暂无播放地址（返回字段：${keys || "空"}${vapi ? `；video_api=${vapi.slice(0, 80)}` : ""}）`);
         }
+        // 加密播放列表先自检，把上游 502 的具体原因带到界面上
+        if (url.includes("/hlsx?")) {
+          const r = await fetch(url).catch(() => null);
+          if (!r) throw new Error("播放列表请求失败：网络不可达");
+          if (!r.ok) throw new Error(`播放列表解析失败：${(await r.text()).slice(0, 200)}`);
+        }
+        if (!alive) return;
         setPlayUrls((m) => ({ ...m, [playKey]: url }));
         addHistory(curId);
       })
