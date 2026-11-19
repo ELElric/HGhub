@@ -1,0 +1,210 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.ridu.plan"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:4:5-67
+11-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:4:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:5:5-79
+12-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:5:22-76
+13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+13-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:6:5-77
+13-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:6:22-74
+14    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+14-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:7:5-81
+14-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:7:22-78
+15    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+15-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:8:5-83
+15-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:8:22-80
+16
+17    <permission
+17-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.14.6/transforms/b788147fdb16f4de6fc76f210b1f8ec5/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+18        android:name="com.ridu.plan.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+18-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.14.6/transforms/b788147fdb16f4de6fc76f210b1f8ec5/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+19        android:protectionLevel="signature" />
+19-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.14.6/transforms/b788147fdb16f4de6fc76f210b1f8ec5/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+20
+21    <uses-permission android:name="com.ridu.plan.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+21-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.14.6/transforms/b788147fdb16f4de6fc76f210b1f8ec5/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+21-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.14.6/transforms/b788147fdb16f4de6fc76f210b1f8ec5/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+22
+23    <application
+23-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:10:5-66:19
+24        android:name="com.ridu.plan.App"
+24-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:11:9-28
+25        android:allowBackup="true"
+25-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:12:9-35
+26        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+26-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.14.6/transforms/b788147fdb16f4de6fc76f210b1f8ec5/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+27        android:extractNativeLibs="false"
+28        android:icon="@mipmap/ic_launcher"
+28-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:13:9-43
+29        android:label="@string/app_name"
+29-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:14:9-41
+30        android:roundIcon="@mipmap/ic_launcher_round"
+30-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:15:9-54
+31        android:supportsRtl="true"
+31-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:16:9-35
+32        android:theme="@style/Theme.Ridu"
+32-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:17:9-42
+33        android:usesCleartextTraffic="true" >
+33-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:18:9-44
+34        <activity
+34-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:20:9-28:20
+35            android:name="com.ridu.plan.MainActivity"
+35-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:21:13-41
+36            android:exported="true"
+36-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:22:13-36
+37            android:launchMode="singleTop" >
+37-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:23:13-43
+38            <intent-filter>
+38-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:24:13-27:29
+39                <action android:name="android.intent.action.MAIN" />
+39-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:25:17-69
+39-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:25:25-66
+40
+41                <category android:name="android.intent.category.LAUNCHER" />
+41-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:26:17-77
+41-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:26:27-74
+42            </intent-filter>
+43        </activity>
+44        <activity
+44-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:30:9-33:58
+45            android:name="com.ridu.plan.BookDetailActivity"
+45-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:31:13-47
+46            android:exported="false"
+46-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:32:13-37
+47            android:parentActivityName="com.ridu.plan.MainActivity" />
+47-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:33:13-55
+48
+49        <receiver
+49-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:35:9-37:40
+50            android:name="com.ridu.plan.notify.ReminderReceiver"
+50-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:36:13-52
+51            android:exported="false" />
+51-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:37:13-37
+52        <receiver
+52-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:39:9-41:40
+53            android:name="com.ridu.plan.notify.CheckInReceiver"
+53-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:40:13-51
+54            android:exported="false" />
+54-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:41:13-37
+55        <receiver
+55-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:43:9-54:20
+56            android:name="com.ridu.plan.notify.BootReceiver"
+56-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:44:13-48
+57            android:enabled="true"
+57-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:45:13-35
+58            android:exported="true" >
+58-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:46:13-36
+59            <intent-filter>
+59-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:47:13-53:29
+60                <action android:name="android.intent.action.BOOT_COMPLETED" />
+60-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:48:17-79
+60-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:48:25-76
+61                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+61-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:49:17-86
+61-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:49:25-83
+62                <action android:name="android.intent.action.TIME_SET" />
+62-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:50:17-73
+62-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:50:25-70
+63                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+63-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:51:17-81
+63-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:51:25-78
+64                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+64-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:52:17-84
+64-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:52:25-81
+65            </intent-filter>
+66        </receiver>
+67
+68        <provider
+69            android:name="androidx.core.content.FileProvider"
+69-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:57:13-62
+70            android:authorities="com.ridu.plan.fileprovider"
+70-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:58:13-64
+71            android:exported="false"
+71-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:59:13-37
+72            android:grantUriPermissions="true" >
+72-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:60:13-47
+73            <meta-data
+73-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:61:13-63:54
+74                android:name="android.support.FILE_PROVIDER_PATHS"
+74-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:62:17-67
+75                android:resource="@xml/file_paths" />
+75-->/workspace/reading-plan-app/app/src/main/AndroidManifest.xml:63:17-51
+76        </provider>
+77        <provider
+77-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+78            android:name="androidx.startup.InitializationProvider"
+78-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+79            android:authorities="com.ridu.plan.androidx-startup"
+79-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+80            android:exported="false" >
+80-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+81            <meta-data
+81-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+82                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+82-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+83                android:value="androidx.startup" />
+83-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.14.6/transforms/13a91b0b33a9c836244c4a71671392ae/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+84            <meta-data
+84-->[androidx.lifecycle:lifecycle-process:2.6.2] /root/.gradle/caches/8.14.6/transforms/aa8b59310e1a8871b9744b63a65ee802/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+85                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+85-->[androidx.lifecycle:lifecycle-process:2.6.2] /root/.gradle/caches/8.14.6/transforms/aa8b59310e1a8871b9744b63a65ee802/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+86                android:value="androidx.startup" />
+86-->[androidx.lifecycle:lifecycle-process:2.6.2] /root/.gradle/caches/8.14.6/transforms/aa8b59310e1a8871b9744b63a65ee802/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+87            <meta-data
+87-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+88                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+88-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+89                android:value="androidx.startup" />
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+90        </provider>
+91
+92        <receiver
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+93            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+93-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+94            android:directBootAware="false"
+94-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+95            android:enabled="true"
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+96            android:exported="true"
+96-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+97            android:permission="android.permission.DUMP" >
+97-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+98            <intent-filter>
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+99                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+99-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+99-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+100            </intent-filter>
+101            <intent-filter>
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+102                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+102-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+102-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+103            </intent-filter>
+104            <intent-filter>
+104-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+105                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+105-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+105-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+106            </intent-filter>
+107            <intent-filter>
+107-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+108                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+108-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+108-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.14.6/transforms/a3b700b4418ff24692c1018b1a7996a8/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+109            </intent-filter>
+110        </receiver>
+111    </application>
+112
+113</manifest>

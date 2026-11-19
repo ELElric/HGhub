@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Ridu" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/text_on_primary</item>
+        <item name="colorPrimaryContainer">@color/surface_variant</item>
+        <item name="colorOnPrimaryContainer">@color/ink</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/text_on_primary</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="android:colorBackground">@color/paper</item>
+        <item name="android:windowBackground">@color/paper</item>
+        <item name="android:statusBarColor">@color/paper</item>
+        <item name="android:navigationBarColor">@color/paper</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Ridu.Dialog</item>
+    </style>
+
+    <style name="ThemeOverlay.Ridu.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSurface">@color/surface</item>
+    </style>
+
+    <style name="TextAppearance.Ridu.Title" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Ridu.BookTitle" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textColor">@color/text_on_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Ridu.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>
