@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ridu.plan.data.Book;
 import com.ridu.plan.data.PlanStore;
 import com.ridu.plan.notify.ReminderScheduler;
+import com.ridu.plan.ui.CheckInFragment;
 import com.ridu.plan.ui.PlanFragment;
 import com.ridu.plan.ui.Refreshable;
 import com.ridu.plan.ui.SettingsFragment;
@@ -59,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void select(int id) {
         Fragment fragment;
-        if (id == R.id.nav_plan) {
+        if (id == R.id.nav_checkin) {
+            fragment = new CheckInFragment();
+        } else if (id == R.id.nav_plan) {
             fragment = new PlanFragment();
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();

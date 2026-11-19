@@ -4,6 +4,7 @@
     <string name="channel_name">每日阅读提醒</string>
     <string name="channel_desc">每天提醒你今天该读哪本书</string>
     <string name="nav_today">今日</string>
+    <string name="nav_checkin">打卡</string>
     <string name="nav_plan">计划</string>
     <string name="nav_settings">设置</string>
 </resources>

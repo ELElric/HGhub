@@ -373,6 +373,10 @@ public final class PlanStore {
         return prefs(c).getStringSet(KEY_CHECKINS, new HashSet<>()).contains(date.toString());
     }
 
+    public static Set<String> getCheckInDates(Context c) {
+        return new HashSet<>(prefs(c).getStringSet(KEY_CHECKINS, new HashSet<>()));
+    }
+
     public static boolean setCheckedIn(Context c, LocalDate date, boolean checked) {
         Set<String> set = new HashSet<>(prefs(c).getStringSet(KEY_CHECKINS, new HashSet<>()));
         if (checked) set.add(date.toString());
