@@ -184,6 +184,16 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_detail_open"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:text="打开电子书"
+                android:textSize="15sp"
+                app:cornerRadius="18dp" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_detail_today"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"

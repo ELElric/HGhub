@@ -1,13 +1,18 @@
 package com.ridu.plan.ui;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -19,6 +24,7 @@ import com.ridu.plan.R;
 import com.ridu.plan.data.Book;
 import com.ridu.plan.data.Plan;
 import com.ridu.plan.data.PlanStore;
+import com.ridu.plan.reader.ExternalReader;
 import com.ridu.plan.util.DateUtils;
 
 import java.time.LocalDate;
@@ -36,11 +42,22 @@ public class TodayFragment extends Fragment implements Refreshable {
     private ProgressBar pbBook;
     private MaterialButton btnCheckin;
     private MaterialButton btnDetail;
+    private MaterialButton btnOpen;
 
     private Plan plan;
     private Book book;
     private LocalDate today;
     private int dayIndex;
+
+    private final ActivityResultLauncher<String[]> pickBook =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri == null || book == null) return;
+                Context c = getContext();
+                if (c == null) return;
+                ExternalReader.bind(c, ExternalReader.key(book), uri);
+                updateReaderButton();
+                openReader();
+            });
 
     @Nullable
     @Override
@@ -64,6 +81,7 @@ public class TodayFragment extends Fragment implements Refreshable {
         pbBook = view.findViewById(R.id.pb_book);
         btnCheckin = view.findViewById(R.id.btn_checkin);
         btnDetail = view.findViewById(R.id.btn_detail);
+        btnOpen = view.findViewById(R.id.btn_open_reader);
 
         btnCheckin.setOnClickListener(v -> {
             boolean checked = PlanStore.toggleCheckIn(requireContext(), LocalDate.now());
@@ -77,7 +95,38 @@ public class TodayFragment extends Fragment implements Refreshable {
                 ((MainActivity) getActivity()).showBookDetail(book);
             }
         });
+        btnOpen.setOnClickListener(v -> openReader());
+        btnOpen.setOnLongClickListener(v -> {
+            if (book == null) return true;
+            ExternalReader.unbind(requireContext(), ExternalReader.key(book));
+            updateReaderButton();
+            Toast.makeText(requireContext(), "已解除文件关联，点击可重新选择", Toast.LENGTH_SHORT).show();
+            return true;
+        });
         render();
+    }
+
+    private void openReader() {
+        if (book == null) return;
+        Context c = getContext();
+        if (c == null) return;
+        Uri uri = ExternalReader.boundUri(c, ExternalReader.key(book));
+        if (uri == null) {
+            pickBook.launch(new String[]{"*/*"});
+            return;
+        }
+        if (!ExternalReader.open(c, uri)) {
+            Toast.makeText(c, "没有找到可以打开该文件的应用", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void updateReaderButton() {
+        if (btnOpen == null || book == null) return;
+        Context c = getContext();
+        if (c == null) return;
+        String app = ExternalReader.moonPackage(c) != null ? "静读天下" : "阅读应用";
+        boolean bound = ExternalReader.boundUri(c, ExternalReader.key(book)) != null;
+        btnOpen.setText(bound ? "继续阅读 · " + app : "打开电子书 · " + app);
     }
 
     @Override
@@ -128,6 +177,7 @@ public class TodayFragment extends Fragment implements Refreshable {
                 + " 天 · 已完成 " + plan.completedBooks(dayIndex) + " 本");
 
         updateCheckinButton(PlanStore.isCheckedIn(requireContext(), today));
+        updateReaderButton();
     }
 
     private void updateCheckinButton(boolean checked) {

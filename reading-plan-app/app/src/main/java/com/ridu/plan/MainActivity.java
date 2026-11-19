@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
     private void maybeCheckUpdate() {
         if (!PlanStore.isAutoUpdate(this)) return;
         String url = PlanStore.getAppUpdateUrl(this);
-        if (url.isEmpty()) return;
         new Handler(Looper.getMainLooper()).postDelayed(
                 () -> UpdateChecker.checkForUpdate(this, url, true), 1500);
     }
