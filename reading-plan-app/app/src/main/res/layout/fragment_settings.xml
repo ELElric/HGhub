@@ -176,6 +176,13 @@
                     android:layout_marginTop="2dp"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_check_plan_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="一键更新书单" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

@@ -3120,6 +3120,7 @@ id blocking
 id bottom
 id bottom_nav
 id bounce
+id btn_check_plan_update
 id btn_check_update
 id btn_checkin
 id btn_detail

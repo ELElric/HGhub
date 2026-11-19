@@ -108,6 +108,9 @@ public class SettingsFragment extends Fragment implements Refreshable {
         v.findViewById(R.id.btn_import_file).setOnClickListener(x ->
                 openPlan.launch(new String[]{"application/json", "text/plain", "*/*"}));
         v.findViewById(R.id.btn_import_clipboard).setOnClickListener(x -> importClipboard());
+        v.findViewById(R.id.btn_check_plan_update).setOnClickListener(x ->
+                PlanImporter.checkForPlanUpdate(requireActivity(),
+                        PlanStore.getPlanUpdateUrl(requireContext()), false, this::afterImport));
         v.findViewById(R.id.btn_plan_url).setOnClickListener(x -> editPlanUrl());
         v.findViewById(R.id.btn_update_url).setOnClickListener(x -> editAppUrl());
         v.findViewById(R.id.btn_token).setOnClickListener(x -> editToken());
@@ -143,7 +146,9 @@ public class SettingsFragment extends Fragment implements Refreshable {
                 + " · 今天是第 " + (DateUtils.dayIndex(start, LocalDate.now()) + 1) + " 天");
 
         String planUrl = PlanStore.getPlanUpdateUrl(requireContext());
-        tvPlanUrl.setText(planUrl.isEmpty() ? "书单更新地址：未设置（可手动导入）" : "书单更新地址：" + planUrl);
+        tvPlanUrl.setText(planUrl.isEmpty()
+                ? "书单更新地址：内置仓库清单（私有库需 Token）"
+                : "书单更新地址：" + planUrl);
         String appUrl = PlanStore.getAppUpdateUrl(requireContext());
         tvUpdateUrl.setText(appUrl.isEmpty() ? "应用更新地址：未设置（可安装本地 APK）" : "应用更新地址：" + appUrl);
         String token = PlanStore.getGithubToken(requireContext());
@@ -243,7 +248,9 @@ public class SettingsFragment extends Fragment implements Refreshable {
     }
 
     private void editPlanUrl() {
-        inputDialog("书单 JSON 地址", PlanStore.getPlanUpdateUrl(requireContext()), value -> {
+        String planUrl = PlanStore.getPlanUpdateUrl(requireContext());
+        inputDialog("书单地址（plan.json 或 GitHub manifest）",
+                planUrl.isEmpty() ? PlanImporter.DEFAULT_PLAN_URL : planUrl, value -> {
             PlanStore.setPlanUpdateUrl(requireContext(), value);
             refresh();
             if (!value.isEmpty()) {

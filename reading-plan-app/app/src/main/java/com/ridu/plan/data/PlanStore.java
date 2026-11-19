@@ -23,6 +23,7 @@ public final class PlanStore {
     private static final String KEY_REMINDER_ENABLED = "reminder_enabled";
     private static final String KEY_CHECKINS = "checkins";
     private static final String KEY_PLAN_URL = "plan_update_url";
+    private static final String KEY_PLAN_VERSION = "plan_version";
     private static final String KEY_APP_URL = "app_update_url";
     private static final String KEY_AUTO_UPDATE = "auto_update";
     private static final String KEY_GH_TOKEN = "gh_token";
@@ -165,6 +166,14 @@ public final class PlanStore {
 
     public static void setPlanUpdateUrl(Context c, String url) {
         prefs(c).edit().putString(KEY_PLAN_URL, url == null ? "" : url.trim()).apply();
+    }
+
+    public static int getPlanVersion(Context c) {
+        return prefs(c).getInt(KEY_PLAN_VERSION, 0);
+    }
+
+    public static void setPlanVersion(Context c, int version) {
+        prefs(c).edit().putInt(KEY_PLAN_VERSION, version).apply();
     }
 
     public static String getAppUpdateUrl(Context c) {

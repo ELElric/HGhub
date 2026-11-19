@@ -10,17 +10,26 @@ import com.ridu.plan.data.Plan;
 import com.ridu.plan.data.PlanStore;
 import com.ridu.plan.notify.ReminderScheduler;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class PlanImporter {
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+
+    /**
+     * 仓库里的书单清单。私有库需要“设置 → GitHub 只读 Token”。
+     */
+    public static final String DEFAULT_PLAN_URL =
+            "https://api.github.com/repos/ELElric/APK-/contents/apps/ridu-plan/plans/manifest.json";
 
     private PlanImporter() {
     }
@@ -97,13 +106,110 @@ public final class PlanImporter {
         });
     }
 
+    /**
+     * 一键检查并应用书单更新：读取 manifest.json，下载 plan 文件并校验 SHA-256，
+     * 校验通过后直接替换本地计划，保留当前开始日期，无需手动导入文件。
+     */
+    public static void checkForPlanUpdate(Activity activity, String url, boolean silent, Runnable onDone) {
+        final String source = (url == null || url.trim().isEmpty()) ? DEFAULT_PLAN_URL : url.trim();
+        if (!silent) Toast.makeText(activity, "正在检查书单…", Toast.LENGTH_SHORT).show();
+        EXECUTOR.execute(() -> {
+            try {
+                String token = PlanStore.getGithubToken(activity);
+                String manifestBody = httpGet(source, token).replace("\uFEFF", "").trim();
+                JSONObject manifest = new JSONObject(manifestBody);
+
+                String planJson;
+                int version;
+                if (manifest.has("books")) {
+                    // 地址直接指向 plan.json
+                    planJson = manifestBody;
+                    version = manifest.optInt("planVersion", 0);
+                } else {
+                    version = manifest.optInt("planVersion", 0);
+                    String file = manifest.optString("file", "").trim();
+                    if (file.isEmpty()) throw new Exception("书单清单缺少 file 字段");
+                    planJson = httpGet(sibling(source, file), token);
+                    String expected = manifest.optString("sha256", "").trim();
+                    if (!expected.isEmpty() && !expected.equalsIgnoreCase(sha256(planJson))) {
+                        throw new Exception("书单文件校验失败（SHA-256 不匹配）");
+                    }
+                }
+
+                final Plan parsed = Plan.parse(planJson);
+                final int newVersion = version;
+                final int current = PlanStore.getPlanVersion(activity);
+                if (newVersion > 0 && current >= newVersion) {
+                    if (!silent) {
+                        activity.runOnUiThread(() -> Toast.makeText(activity,
+                                "书单已是最新（v" + current + "）", Toast.LENGTH_SHORT).show());
+                    }
+                    if (onDone != null) activity.runOnUiThread(onDone);
+                    return;
+                }
+
+                activity.runOnUiThread(() -> {
+                    try {
+                        PlanStore.savePlan(activity, planJson);
+                        PlanStore.setPlanVersion(activity, newVersion);
+                        ReminderScheduler.schedule(activity);
+                        Toast.makeText(activity, "书单已更新：共 " + parsed.books.size()
+                                + " 本，保留当前开始日期", Toast.LENGTH_LONG).show();
+                        if (onDone != null) onDone.run();
+                    } catch (Exception e) {
+                        toastError(activity, e);
+                    }
+                });
+            } catch (Exception e) {
+                if (silent) return;
+                String message = String.valueOf(e.getMessage());
+                if (message.contains("404")) {
+                    message += "\n\n私有库需要在“设置 → GitHub 只读 Token”里填入 Token。";
+                }
+                final String shown = message;
+                activity.runOnUiThread(() -> new MaterialAlertDialogBuilder(activity)
+                        .setTitle("书单更新失败")
+                        .setMessage(shown)
+                        .setPositiveButton("知道了", null)
+                        .show());
+            }
+        });
+    }
+
+    private static String sibling(String url, String file) {
+        int q = url.indexOf('?');
+        String base = q >= 0 ? url.substring(0, q) : url;
+        int slash = base.lastIndexOf('/');
+        return base.substring(0, slash + 1) + Uri.encode(file);
+    }
+
+    private static String sha256(String text) throws Exception {
+        byte[] digest = MessageDigest.getInstance("SHA-256")
+                .digest(text.getBytes(StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder(digest.length * 2);
+        for (byte b : digest) {
+            sb.append(Character.forDigit((b >> 4) & 0xF, 16));
+            sb.append(Character.forDigit(b & 0xF, 16));
+        }
+        return sb.toString();
+    }
+
     public static String httpGet(String url) throws Exception {
+        return httpGet(url, "");
+    }
+
+    public static String httpGet(String url, String token) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setConnectTimeout(20000);
         conn.setReadTimeout(30000);
         conn.setInstanceFollowRedirects(true);
         conn.setRequestProperty("User-Agent", "RiduPlan/1.0");
-        conn.setRequestProperty("Accept", "application/json,text/plain,*/*");
+        conn.setRequestProperty("Accept", url.contains("api.github.com")
+                ? "application/vnd.github.raw"
+                : "application/json,text/plain,*/*");
+        if (token != null && !token.isEmpty()) {
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+        }
         int code = conn.getResponseCode();
         if (code < 200 || code >= 300) {
             throw new Exception("HTTP " + code);

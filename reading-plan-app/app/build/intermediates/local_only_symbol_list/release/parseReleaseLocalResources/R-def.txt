@@ -27,6 +27,7 @@ drawable ic_plan
 drawable ic_settings
 drawable ic_today
 id bottom_nav
+id btn_check_plan_update
 id btn_check_update
 id btn_checkin
 id btn_detail
