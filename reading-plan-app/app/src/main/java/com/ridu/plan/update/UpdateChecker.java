@@ -35,6 +35,9 @@ public final class UpdateChecker {
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private static final int MAX_ATTEMPTS = 4;
 
+    public static final String DEFAULT_MANIFEST_URL =
+            "https://api.github.com/repos/ELElric/APK-/contents/manifest.json";
+
     private UpdateChecker() {
     }
 
@@ -49,12 +52,9 @@ public final class UpdateChecker {
     }
 
     public static void checkForUpdate(Activity activity, String url, boolean silent) {
-        if (url == null || url.trim().isEmpty()) {
-            if (!silent) Toast.makeText(activity, "请先设置应用更新地址", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (!silent) Toast.makeText(activity, "正在检查更新…", Toast.LENGTH_SHORT).show();
-        final String source = url.trim();
+        final String source = (url == null || url.trim().isEmpty())
+                ? DEFAULT_MANIFEST_URL : url.trim();
         final boolean manifest = isGithubManifest(source);
         EXECUTOR.execute(() -> {
             try {

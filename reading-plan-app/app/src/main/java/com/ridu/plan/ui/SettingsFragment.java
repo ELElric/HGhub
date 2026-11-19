@@ -150,10 +150,14 @@ public class SettingsFragment extends Fragment implements Refreshable {
                 ? "书单更新地址：内置仓库清单（私有库需 Token）"
                 : "书单更新地址：" + planUrl);
         String appUrl = PlanStore.getAppUpdateUrl(requireContext());
-        tvUpdateUrl.setText(appUrl.isEmpty() ? "应用更新地址：未设置（可安装本地 APK）" : "应用更新地址：" + appUrl);
+        tvUpdateUrl.setText(appUrl.isEmpty()
+                ? "应用更新地址：内置仓库 manifest（自动检查）"
+                : "应用更新地址：" + appUrl);
         String token = PlanStore.getGithubToken(requireContext());
-        tvToken.setText(token.isEmpty() ? "GitHub 只读 Token：未设置"
-                : "GitHub 只读 Token：已设置（" + mask(token) + "）");
+        boolean customToken = PlanStore.hasCustomGithubToken(requireContext());
+        tvToken.setText(customToken
+                ? "GitHub Token：自定义（" + mask(token) + "）"
+                : "GitHub Token：使用内置凭据");
 
         tvVersion.setText("当前版本：" + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
         Plan plan = PlanStore.getPlan(requireContext());
@@ -260,18 +264,21 @@ public class SettingsFragment extends Fragment implements Refreshable {
     }
 
     private void editAppUrl() {
+        String appUrl = PlanStore.getAppUpdateUrl(requireContext());
         inputDialog("应用更新地址（version.json 或 GitHub manifest 接口）",
-                PlanStore.getAppUpdateUrl(requireContext()), value -> {
+                appUrl.isEmpty() ? UpdateChecker.DEFAULT_MANIFEST_URL : appUrl, value -> {
             PlanStore.setAppUpdateUrl(requireContext(), value);
             refresh();
         });
     }
 
     private void editToken() {
-        inputDialog("GitHub 只读 Token", PlanStore.getGithubToken(requireContext()), value -> {
+        String current = PlanStore.hasCustomGithubToken(requireContext())
+                ? PlanStore.getGithubToken(requireContext()) : "";
+        inputDialog("GitHub Token（留空则使用内置凭据）", current, value -> {
             PlanStore.setGithubToken(requireContext(), value);
             refresh();
-            Toast.makeText(requireContext(), value.isEmpty() ? "已清除 Token" : "已保存 Token",
+            Toast.makeText(requireContext(), value.isEmpty() ? "已清除，将使用内置凭据" : "已保存 Token",
                     Toast.LENGTH_SHORT).show();
         });
     }

@@ -193,7 +193,14 @@ public final class PlanStore {
     }
 
     public static String getGithubToken(Context c) {
-        return prefs(c).getString(KEY_GH_TOKEN, "");
+        String saved = prefs(c).getString(KEY_GH_TOKEN, "");
+        if (saved != null && !saved.trim().isEmpty()) return saved.trim();
+        return TokenVault.get();
+    }
+
+    public static boolean hasCustomGithubToken(Context c) {
+        String saved = prefs(c).getString(KEY_GH_TOKEN, "");
+        return saved != null && !saved.trim().isEmpty();
     }
 
     public static void setGithubToken(Context c, String token) {
