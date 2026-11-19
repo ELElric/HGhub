@@ -3132,6 +3132,7 @@ id btn_notif_permission
 id btn_plan_url
 id btn_restart_today
 id btn_time
+id btn_token
 id btn_update_url
 id buttonPanel
 id cancel_button
@@ -3522,6 +3523,7 @@ id tv_reminder_time
 id tv_source
 id tv_start_date
 id tv_title
+id tv_token
 id tv_update_url
 id tv_version
 id unchecked

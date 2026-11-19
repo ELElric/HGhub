@@ -25,6 +25,7 @@ public final class PlanStore {
     private static final String KEY_PLAN_URL = "plan_update_url";
     private static final String KEY_APP_URL = "app_update_url";
     private static final String KEY_AUTO_UPDATE = "auto_update";
+    private static final String KEY_GH_TOKEN = "gh_token";
 
     private static Plan cached;
 
@@ -180,5 +181,13 @@ public final class PlanStore {
 
     public static void setAutoUpdate(Context c, boolean enabled) {
         prefs(c).edit().putBoolean(KEY_AUTO_UPDATE, enabled).apply();
+    }
+
+    public static String getGithubToken(Context c) {
+        return prefs(c).getString(KEY_GH_TOKEN, "");
+    }
+
+    public static void setGithubToken(Context c, String token) {
+        prefs(c).edit().putString(KEY_GH_TOKEN, token == null ? "" : token.trim()).apply();
     }
 }

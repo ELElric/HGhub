@@ -50,6 +50,7 @@ public class SettingsFragment extends Fragment implements Refreshable {
     private TextView tvStartDate;
     private TextView tvPlanUrl;
     private TextView tvUpdateUrl;
+    private TextView tvToken;
     private TextView tvVersion;
     private TextView tvAboutPlan;
     private TextView tvNoticePermission;
@@ -74,6 +75,7 @@ public class SettingsFragment extends Fragment implements Refreshable {
         tvStartDate = v.findViewById(R.id.tv_start_date);
         tvPlanUrl = v.findViewById(R.id.tv_plan_url);
         tvUpdateUrl = v.findViewById(R.id.tv_update_url);
+        tvToken = v.findViewById(R.id.tv_token);
         tvVersion = v.findViewById(R.id.tv_version);
         tvAboutPlan = v.findViewById(R.id.tv_about_plan);
         tvNoticePermission = v.findViewById(R.id.tv_notice_permission);
@@ -108,6 +110,7 @@ public class SettingsFragment extends Fragment implements Refreshable {
         v.findViewById(R.id.btn_import_clipboard).setOnClickListener(x -> importClipboard());
         v.findViewById(R.id.btn_plan_url).setOnClickListener(x -> editPlanUrl());
         v.findViewById(R.id.btn_update_url).setOnClickListener(x -> editAppUrl());
+        v.findViewById(R.id.btn_token).setOnClickListener(x -> editToken());
         v.findViewById(R.id.btn_check_update).setOnClickListener(x ->
                 UpdateChecker.checkForUpdate(requireActivity(), PlanStore.getAppUpdateUrl(requireContext()), false));
         v.findViewById(R.id.btn_install_local).setOnClickListener(x ->
@@ -143,6 +146,9 @@ public class SettingsFragment extends Fragment implements Refreshable {
         tvPlanUrl.setText(planUrl.isEmpty() ? "书单更新地址：未设置（可手动导入）" : "书单更新地址：" + planUrl);
         String appUrl = PlanStore.getAppUpdateUrl(requireContext());
         tvUpdateUrl.setText(appUrl.isEmpty() ? "应用更新地址：未设置（可安装本地 APK）" : "应用更新地址：" + appUrl);
+        String token = PlanStore.getGithubToken(requireContext());
+        tvToken.setText(token.isEmpty() ? "GitHub 只读 Token：未设置"
+                : "GitHub 只读 Token：已设置（" + mask(token) + "）");
 
         tvVersion.setText("当前版本：" + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
         Plan plan = PlanStore.getPlan(requireContext());
@@ -247,10 +253,25 @@ public class SettingsFragment extends Fragment implements Refreshable {
     }
 
     private void editAppUrl() {
-        inputDialog("version.json 地址", PlanStore.getAppUpdateUrl(requireContext()), value -> {
+        inputDialog("应用更新地址（version.json 或 GitHub manifest 接口）",
+                PlanStore.getAppUpdateUrl(requireContext()), value -> {
             PlanStore.setAppUpdateUrl(requireContext(), value);
             refresh();
         });
+    }
+
+    private void editToken() {
+        inputDialog("GitHub 只读 Token", PlanStore.getGithubToken(requireContext()), value -> {
+            PlanStore.setGithubToken(requireContext(), value);
+            refresh();
+            Toast.makeText(requireContext(), value.isEmpty() ? "已清除 Token" : "已保存 Token",
+                    Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private static String mask(String token) {
+        if (token.length() <= 4) return "已隐藏";
+        return "…" + token.substring(token.length() - 4);
     }
 
     private void inputDialog(String title, String value, Consumer<String> onOk) {

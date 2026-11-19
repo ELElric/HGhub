@@ -230,6 +230,28 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_token"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_token"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="设置 Token" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:orientation="horizontal">
 
@@ -259,7 +281,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="自动更新流程：读取 version.json → 下载 APK → 调起系统安装器。Android 不允许应用静默安装，最后一步需要你确认。"
+                    android:text="支持两种更新源：公开的 version.json，或 GitHub 私有库的 manifest.json（需只读 Token）。下载失败会自动重试并断点续传；最后一步安装需你确认。"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
