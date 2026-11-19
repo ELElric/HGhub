@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Plan {
+    public String planId = "";
     public String planName = "阅读计划";
     public String source = "";
     public LocalDate startDate = LocalDate.now();
@@ -19,6 +20,7 @@ public class Plan {
         json = json.replace("\uFEFF", "").trim();
         JSONObject root = new JSONObject(json);
         Plan plan = new Plan();
+        plan.planId = root.optString("planId", "").trim();
         plan.planName = root.optString("planName", "阅读计划").trim();
         plan.source = root.optString("source", "").trim();
         String date = root.optString("startDate", "");

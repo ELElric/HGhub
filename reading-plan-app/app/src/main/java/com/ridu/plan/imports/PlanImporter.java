@@ -156,7 +156,7 @@ public final class PlanImporter {
                         PlanStore.setPlanVersion(activity, newVersion);
                         ReminderScheduler.schedule(activity);
                         Toast.makeText(activity, "书单已更新：共 " + parsed.books.size()
-                                + " 本，保留当前开始日期", Toast.LENGTH_LONG).show();
+                                + " 本，旧计划已存入计划库", Toast.LENGTH_LONG).show();
                         if (onDone != null) onDone.run();
                     } catch (Exception e) {
                         toastError(activity, e);

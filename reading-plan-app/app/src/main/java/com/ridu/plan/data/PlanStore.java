@@ -3,6 +3,9 @@ package com.ridu.plan.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class PlanStore {
@@ -54,12 +59,215 @@ public final class PlanStore {
 
     public static synchronized void savePlan(Context c, String json) throws Exception {
         Plan parsed = Plan.parse(json);
+        Plan current = null;
+        try {
+            current = getPlan(c);
+        } catch (Exception ignored) {
+        }
+        if (current != null && !planKey(current).equals(planKey(parsed))) {
+            archive(c, current, readLocalPlan(c), getStartDate(c), getPlanVersion(c));
+        }
         File file = new File(c.getFilesDir(), "plan.json");
         try (FileOutputStream out = new FileOutputStream(file)) {
             out.write(json.getBytes(StandardCharsets.UTF_8));
         }
         prefs(c).edit().putString(KEY_PLAN_JSON, json).apply();
         cached = parsed;
+    }
+
+    public static String planKey(Plan plan) {
+        String id = plan.planId == null ? "" : plan.planId.trim();
+        if (id.isEmpty()) {
+            id = "p" + Integer.toHexString((plan.planName + "|" + plan.totalDays).hashCode());
+        }
+        return id.replaceAll("[^A-Za-z0-9_-]", "-");
+    }
+
+    public static class PlanRecord {
+        public String id = "";
+        public String name = "";
+        public String file = "";
+        public String savedAt = "";
+        public int version;
+        public int books;
+        public int days;
+        public LocalDate startDate = LocalDate.now();
+        public boolean active;
+        public boolean builtin;
+    }
+
+    /** 当前计划先存入计划库，供之后切回。 */
+    public static synchronized void archiveCurrent(Context c) {
+        try {
+            Plan plan = getPlan(c);
+            archive(c, plan, readLocalPlan(c), getStartDate(c), getPlanVersion(c));
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static void archive(Context c, Plan plan, String json, LocalDate start, int version) {
+        try {
+            String id = planKey(plan);
+            String fileName = id + ".json";
+            writeText(new File(plansDir(c), fileName), json);
+
+            JSONArray index = readIndex(c);
+            JSONObject record = null;
+            for (int i = 0; i < index.length(); i++) {
+                JSONObject o = index.optJSONObject(i);
+                if (o != null && id.equals(o.optString("id"))) {
+                    record = o;
+                    break;
+                }
+            }
+            if (record == null) {
+                record = new JSONObject();
+                index.put(record);
+            }
+            record.put("id", id);
+            record.put("name", plan.planName);
+            record.put("file", fileName);
+            record.put("version", version);
+            record.put("books", plan.books.size());
+            record.put("days", plan.totalDays);
+            record.put("startDate", start.toString());
+            record.put("savedAt", LocalDate.now().toString());
+            writeText(indexFile(c), index.toString());
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static synchronized List<PlanRecord> listArchived(Context c) {
+        List<PlanRecord> out = new ArrayList<>();
+        Plan current = null;
+        try {
+            current = getPlan(c);
+        } catch (Exception ignored) {
+        }
+        String activeId = current == null ? "" : planKey(current);
+
+        JSONArray index = readIndex(c);
+        for (int i = 0; i < index.length(); i++) {
+            JSONObject o = index.optJSONObject(i);
+            if (o == null) continue;
+            PlanRecord r = new PlanRecord();
+            r.id = o.optString("id", "");
+            r.name = o.optString("name", "未命名计划");
+            r.file = o.optString("file", "");
+            r.savedAt = o.optString("savedAt", "");
+            r.version = o.optInt("version", 0);
+            r.books = o.optInt("books", 0);
+            r.days = o.optInt("days", 0);
+            try {
+                r.startDate = LocalDate.parse(o.optString("startDate", ""));
+            } catch (Exception ignored) {
+            }
+            r.active = r.id.equals(activeId);
+            out.add(r);
+        }
+
+        // 内置的原始书单始终保留在计划库里，即使从未切换过。
+        try {
+            Plan builtin = Plan.parse(readAsset(c));
+            String builtinId = planKey(builtin);
+            boolean found = false;
+            for (PlanRecord r : out) {
+                if (r.id.equals(builtinId)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                PlanRecord r = new PlanRecord();
+                r.id = builtinId;
+                r.name = builtin.planName;
+                r.books = builtin.books.size();
+                r.days = builtin.totalDays;
+                r.version = 0;
+                r.builtin = true;
+                r.active = builtinId.equals(activeId);
+                out.add(r);
+            }
+        } catch (Exception ignored) {
+        }
+
+        out.sort((a, b) -> Boolean.compare(b.active, a.active));
+        return out;
+    }
+
+    public static synchronized void activateArchived(Context c, String id) throws Exception {
+        JSONObject record = null;
+        JSONArray index = readIndex(c);
+        for (int i = 0; i < index.length(); i++) {
+            JSONObject o = index.optJSONObject(i);
+            if (o != null && id.equals(o.optString("id"))) {
+                record = o;
+                break;
+            }
+        }
+
+        String json;
+        String fileName = record == null ? "" : record.optString("file", "");
+        if (!fileName.isEmpty()) {
+            json = readFile(new File(plansDir(c), fileName));
+        } else {
+            String asset = readAsset(c);
+            if (!planKey(Plan.parse(asset)).equals(id)) {
+                throw new Exception("没有找到该计划");
+            }
+            json = asset;
+        }
+
+        Plan target = Plan.parse(json);
+        Plan current = null;
+        try {
+            current = getPlan(c);
+        } catch (Exception ignored) {
+        }
+        if (current != null && !planKey(current).equals(planKey(target))) {
+            archive(c, current, readLocalPlan(c), getStartDate(c), getPlanVersion(c));
+        }
+
+        writeText(new File(c.getFilesDir(), "plan.json"), json);
+        prefs(c).edit().putString(KEY_PLAN_JSON, json).apply();
+        String date = record == null ? "" : record.optString("startDate", "");
+        if (!date.isEmpty()) {
+            try {
+                setStartDate(c, LocalDate.parse(date));
+            } catch (Exception ignored) {
+                setStartDate(c, LocalDate.now());
+            }
+        } else {
+            setStartDate(c, LocalDate.now());
+        }
+        setPlanVersion(c, record == null ? 0 : record.optInt("version", 0));
+        cached = target;
+    }
+
+    private static File plansDir(Context c) {
+        File dir = new File(c.getFilesDir(), "plans");
+        if (!dir.exists()) dir.mkdirs();
+        return dir;
+    }
+
+    private static File indexFile(Context c) {
+        return new File(plansDir(c), "index.json");
+    }
+
+    private static JSONArray readIndex(Context c) {
+        File file = indexFile(c);
+        if (!file.exists()) return new JSONArray();
+        try {
+            return new JSONArray(readFile(file));
+        } catch (Exception e) {
+            return new JSONArray();
+        }
+    }
+
+    private static void writeText(File file, String text) throws IOException {
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            out.write(text.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public static synchronized void resetCache() {

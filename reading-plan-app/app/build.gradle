@@ -11,13 +11,14 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace 'com.ridu.plan'
     compileSdk 35
+    buildToolsVersion "35.0.0"
 
     defaultConfig {
         applicationId "com.ridu.plan"
         minSdk 26
         targetSdk 35
-        versionCode 6
-        versionName "1.1.0"
+        versionCode 7
+        versionName "1.1.1"
         resConfigs "zh", "en"
     }
 

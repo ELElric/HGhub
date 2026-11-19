@@ -40,6 +40,7 @@ id btn_install_local
 id btn_notif_permission
 id btn_open_reader
 id btn_plan_url
+id btn_plans
 id btn_restart_today
 id btn_time
 id btn_token

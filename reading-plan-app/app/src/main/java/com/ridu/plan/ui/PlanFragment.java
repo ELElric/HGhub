@@ -18,12 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.ridu.plan.MainActivity;
 import com.ridu.plan.R;
 import com.ridu.plan.data.Book;
 import com.ridu.plan.data.Plan;
 import com.ridu.plan.data.PlanStore;
 import com.ridu.plan.imports.PlanImporter;
+import com.ridu.plan.notify.ReminderScheduler;
 import com.ridu.plan.util.DateUtils;
 
 import java.time.LocalDate;
@@ -53,6 +55,7 @@ public class PlanFragment extends Fragment implements Refreshable {
         pbOverall = view.findViewById(R.id.pb_overall);
         recycler = view.findViewById(R.id.rv_plan);
         MaterialButton importBtn = view.findViewById(R.id.btn_import);
+        MaterialButton plansBtn = view.findViewById(R.id.btn_plans);
 
         adapter = new PlanAdapter(book -> {
             if (getActivity() instanceof MainActivity) {
@@ -70,6 +73,7 @@ public class PlanFragment extends Fragment implements Refreshable {
 
         importBtn.setOnClickListener(v -> openDocument.launch(
                 new String[]{"application/json", "text/plain", "*/*"}));
+        plansBtn.setOnClickListener(v -> showPlanLibrary());
         load();
     }
 
@@ -108,6 +112,48 @@ public class PlanFragment extends Fragment implements Refreshable {
             rows.add(b);
         }
         adapter.setData(rows, start, todayIndex);
+    }
+
+    private void showPlanLibrary() {
+        List<PlanStore.PlanRecord> records = PlanStore.listArchived(requireContext());
+        if (records.isEmpty()) {
+            Toast.makeText(requireContext(), "计划库还是空的", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String[] items = new String[records.size()];
+        for (int i = 0; i < records.size(); i++) {
+            PlanStore.PlanRecord r = records.get(i);
+            items[i] = (r.active ? "● " : "") + r.name + " · " + r.books + " 本 / "
+                    + r.days + " 天" + (r.active ? "（当前）" : "");
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("计划库")
+                .setItems(items, (d, which) -> {
+                    PlanStore.PlanRecord r = records.get(which);
+                    if (r.active) return;
+                    new MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("切换到《" + r.name + "》？")
+                            .setMessage("当前计划会存入计划库，打卡记录保留；切换后可随时切回。")
+                            .setPositiveButton("切换", (x, y) -> switchTo(r))
+                            .setNegativeButton("取消", null)
+                            .show();
+                })
+                .setNegativeButton("关闭", null)
+                .show();
+    }
+
+    private void switchTo(PlanStore.PlanRecord record) {
+        try {
+            PlanStore.activateArchived(requireContext(), record.id);
+            ReminderScheduler.schedule(requireContext());
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).refreshCurrent();
+            }
+            load();
+            Toast.makeText(requireContext(), "已切换到《" + record.name + "》", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "切换失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void importUri(Uri uri) {
