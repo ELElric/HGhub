@@ -10,6 +10,7 @@ import com.ridu.plan.data.Plan;
 import com.ridu.plan.data.PlanStore;
 import com.ridu.plan.notify.ReminderScheduler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -121,7 +122,8 @@ public final class PlanImporter {
 
                 String planJson;
                 int version;
-                if (manifest.has("books")) {
+                JSONArray direct = manifest.optJSONArray("books");
+                if (direct != null && direct.length() > 0) {
                     // 地址直接指向 plan.json
                     planJson = manifestBody;
                     version = manifest.optInt("planVersion", 0);
