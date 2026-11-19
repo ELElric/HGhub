@@ -1,90 +1,94 @@
 [
     {
-        "merged": "com.ridu.plan.app-release-32:/layout_fragment_today.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/layout/fragment_today.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/xml_file_paths.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/xml/file_paths.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_ic_plan.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/ic_plan.xml"
     },
     {
         "merged": "com.ridu.plan.app-release-32:/layout_fragment_plan.xml.flat",
         "source": "com.ridu.plan.app-main-33:/layout/fragment_plan.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/xml_file_paths.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/xml/file_paths.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_bg_card.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/bg_card.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_fragment_plan.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/fragment_plan.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_ic_back.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/ic_back.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_bg_chip.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/bg_chip.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_ic_back.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/ic_back.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/menu_bottom_nav.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/menu/bottom_nav.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_bg_hero.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/bg_hero.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_bg_index.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/bg_index.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_bg_hero.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/bg_hero.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_ic_today.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/ic_today.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_ic_settings.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/ic_settings.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_ic_launcher_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/layout_item_book.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/layout/item_book.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/ic_launcher_background.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_bg_index.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/bg_index.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/layout_fragment_settings.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/layout/fragment_settings.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/color_nav_item_color.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/color/nav_item_color.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_bg_card.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/bg_card.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_activity_main.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/activity_main.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_ic_plan.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/ic_plan.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_item_book.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/item_book.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_ic_today.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/ic_today.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_item_header.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/item_header.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/color_nav_item_color.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/color/nav_item_color.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_fragment_today.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/fragment_today.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/layout_item_header.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/layout/item_header.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/menu_bottom_nav.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/menu/bottom_nav.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/layout_activity_book_detail.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/layout/activity_book_detail.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_bg_chip.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/bg_chip.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/drawable/ic_launcher_foreground.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/drawable_ic_settings.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/drawable/ic_settings.xml"
     },
     {
-        "merged": "com.ridu.plan.app-release-32:/layout_activity_main.xml.flat",
-        "source": "com.ridu.plan.app-main-33:/layout/activity_main.xml"
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_fragment_settings.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/fragment_settings.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-release-32:/layout_activity_book_detail.xml.flat",
+        "source": "/root/.gradle/daemon/8.14.6/com.ridu.plan.app-main-33:/layout/activity_book_detail.xml"
     }
 ]

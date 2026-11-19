@@ -75,6 +75,23 @@ public final class PlanStore {
         cached = parsed;
     }
 
+    /** 直接替换当前计划，不再归档（调用方负责先归档）。 */
+    public static synchronized void replacePlan(Context c, String json, Plan parsed,
+                                                LocalDate start, int version) throws IOException {
+        File file = new File(c.getFilesDir(), "plan.json");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            out.write(json.getBytes(StandardCharsets.UTF_8));
+        }
+        prefs(c).edit().putString(KEY_PLAN_JSON, json).apply();
+        cached = parsed;
+        setStartDate(c, start);
+        setPlanVersion(c, version);
+    }
+
+    public static String exportCurrentJson(Context c) {
+        return readLocalPlan(c);
+    }
+
     public static String planKey(Plan plan) {
         String id = plan.planId == null ? "" : plan.planId.trim();
         if (id.isEmpty()) {

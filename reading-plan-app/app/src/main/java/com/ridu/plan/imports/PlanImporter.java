@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.ridu.plan.data.BooklistStore;
 import com.ridu.plan.data.Plan;
 import com.ridu.plan.data.PlanStore;
 import com.ridu.plan.notify.ReminderScheduler;
@@ -48,8 +49,10 @@ public final class PlanImporter {
 
     public static void importJson(Activity activity, String json, Runnable onDone) {
         final Plan parsed;
+        final BooklistStore.Record saved;
         try {
             parsed = Plan.parse(json);
+            saved = BooklistStore.save(activity, json, "本地导入");
         } catch (Exception e) {
             new MaterialAlertDialogBuilder(activity)
                     .setTitle("书单格式不对")
@@ -61,30 +64,25 @@ public final class PlanImporter {
 
         new MaterialAlertDialogBuilder(activity)
                 .setTitle("导入《" + parsed.planName + "》")
-                .setMessage("共 " + parsed.books.size() + " 本书。要从今天重新开始，还是沿用原来的开始日期？")
-                .setPositiveButton("从今天开始", (d, w) -> {
-                    try {
-                        PlanStore.savePlan(activity, json);
-                        PlanStore.setStartDate(activity, LocalDate.now());
-                        ReminderScheduler.schedule(activity);
-                        Toast.makeText(activity, "已导入，从今天开始", Toast.LENGTH_SHORT).show();
-                        if (onDone != null) onDone.run();
-                    } catch (Exception e) {
-                        toastError(activity, e);
-                    }
-                })
-                .setNegativeButton("沿用原开始日期", (d, w) -> {
-                    try {
-                        PlanStore.savePlan(activity, json);
-                        ReminderScheduler.schedule(activity);
-                        Toast.makeText(activity, "已导入，保留当前进度", Toast.LENGTH_SHORT).show();
-                        if (onDone != null) onDone.run();
-                    } catch (Exception e) {
-                        toastError(activity, e);
-                    }
-                })
+                .setMessage("共 " + parsed.books.size() + " 本书，已存入书单库。"
+                        + "要从今天重新规划，还是沿用当前开始日期？")
+                .setPositiveButton("从今天开始", (d, w) -> activate(activity, saved, LocalDate.now(), onDone))
+                .setNegativeButton("沿用当前开始日期", (d, w) ->
+                        activate(activity, saved, PlanStore.getStartDate(activity), onDone))
                 .setNeutralButton("取消", null)
                 .show();
+    }
+
+    private static void activate(Activity activity, BooklistStore.Record record,
+                                 LocalDate start, Runnable onDone) {
+        try {
+            BooklistStore.activate(activity, record.id, start);
+            ReminderScheduler.schedule(activity);
+            Toast.makeText(activity, "已按《" + record.name + "》重新规划", Toast.LENGTH_SHORT).show();
+            if (onDone != null) onDone.run();
+        } catch (Exception e) {
+            toastError(activity, e);
+        }
     }
 
     public static void fetchAndImport(Activity activity, String url, Runnable onDone) {
@@ -119,6 +117,44 @@ public final class PlanImporter {
                 String token = PlanStore.getGithubToken(activity);
                 String manifestBody = httpGet(source, token).replace("\uFEFF", "").trim();
                 JSONObject manifest = new JSONObject(manifestBody);
+
+                JSONArray lists = manifest.optJSONArray("booklists");
+                if (lists != null && lists.length() > 0) {
+                    int added = 0, updated = 0, failed = 0;
+                    for (int i = 0; i < lists.length(); i++) {
+                        JSONObject item = lists.optJSONObject(i);
+                        if (item == null) continue;
+                        String file = item.optString("file", "").trim();
+                        if (file.isEmpty()) continue;
+                        try {
+                            String body = httpGet(sibling(source, file), token);
+                            String expected = item.optString("sha256", "").trim();
+                            if (!expected.isEmpty() && !expected.equalsIgnoreCase(sha256(body))) {
+                                throw new Exception("SHA-256 不匹配");
+                            }
+                            BooklistStore.Record r = BooklistStore.save(activity, body, "远程");
+                            if (r.isNew) added++;
+                            else updated++;
+                        } catch (Exception ignored) {
+                            failed++;
+                        }
+                    }
+                    if (added + updated == 0) {
+                        throw new Exception("所有书单都下载失败，请检查网络或 Token");
+                    }
+                    PlanStore.setPlanVersion(activity, manifest.optInt("planVersion", 0));
+                    final int a = added, u = updated, f = failed;
+                    activity.runOnUiThread(() -> {
+                        if (!silent) {
+                            String msg = "书单库已更新：新增 " + a + " 份，更新 " + u + " 份";
+                            if (f > 0) msg += "，失败 " + f + " 份";
+                            msg += "。当前计划未变，去「书单库」选择。";
+                            Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                        }
+                        if (onDone != null) onDone.run();
+                    });
+                    return;
+                }
 
                 String planJson;
                 int version;

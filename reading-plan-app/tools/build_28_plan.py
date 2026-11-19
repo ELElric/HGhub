@@ -162,6 +162,14 @@ def build():
         "planName": "国家、资本与产业 · 28 本阅读计划",
         "startDate": "2026-11-19",
         "totalDays": cursor,
+        "algorithm": {
+            "replan": True,
+            "totalDays": cursor,
+            "maxDailyPages": 65,
+            "minDaysPerBook": 2,
+            "modeWeights": {"精读": 1.5, "通读": 1.0, "选读": 0.7},
+            "modePages": {"精读": 25, "通读": 40, "选读": 50},
+        },
         "books": books,
     }
     out = Path(__file__).resolve().parents[1] / "dist" / "plan-28-2026.json"

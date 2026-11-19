@@ -22,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.ridu.plan.MainActivity;
 import com.ridu.plan.R;
 import com.ridu.plan.data.Book;
+import com.ridu.plan.data.BooklistStore;
 import com.ridu.plan.data.Plan;
 import com.ridu.plan.data.PlanStore;
 import com.ridu.plan.imports.PlanImporter;
@@ -115,42 +116,46 @@ public class PlanFragment extends Fragment implements Refreshable {
     }
 
     private void showPlanLibrary() {
-        List<PlanStore.PlanRecord> records = PlanStore.listArchived(requireContext());
+        List<BooklistStore.Record> records = BooklistStore.list(requireContext());
         if (records.isEmpty()) {
-            Toast.makeText(requireContext(), "计划库还是空的", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "书单库还是空的", Toast.LENGTH_SHORT).show();
             return;
         }
         String[] items = new String[records.size()];
         for (int i = 0; i < records.size(); i++) {
-            PlanStore.PlanRecord r = records.get(i);
-            items[i] = (r.active ? "● " : "") + r.name + " · " + r.books + " 本 / "
+            BooklistStore.Record r = records.get(i);
+            items[i] = (r.active ? "● " : "") + r.name + " · " + r.books + " 本 / 约 "
                     + r.days + " 天" + (r.active ? "（当前）" : "");
         }
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("计划库")
+                .setTitle("书单库")
                 .setItems(items, (d, which) -> {
-                    PlanStore.PlanRecord r = records.get(which);
+                    BooklistStore.Record r = records.get(which);
                     if (r.active) return;
                     new MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("切换到《" + r.name + "》？")
-                            .setMessage("当前计划会存入计划库，打卡记录保留；切换后可随时切回。")
-                            .setPositiveButton("切换", (x, y) -> switchTo(r))
-                            .setNegativeButton("取消", null)
+                            .setTitle("用《" + r.name + "》重新规划？")
+                            .setMessage("APK 会按书单里的算法重新计算每本书的天数。"
+                                    + "当前计划会保留在书单库，随时可以切回。")
+                            .setPositiveButton("从今天开始", (x, y) ->
+                                    switchTo(r, LocalDate.now()))
+                            .setNegativeButton("沿用当前开始日期", (x, y) ->
+                                    switchTo(r, PlanStore.getStartDate(requireContext())))
+                            .setNeutralButton("取消", null)
                             .show();
                 })
                 .setNegativeButton("关闭", null)
                 .show();
     }
 
-    private void switchTo(PlanStore.PlanRecord record) {
+    private void switchTo(BooklistStore.Record record, LocalDate start) {
         try {
-            PlanStore.activateArchived(requireContext(), record.id);
+            BooklistStore.activate(requireContext(), record.id, start);
             ReminderScheduler.schedule(requireContext());
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).refreshCurrent();
             }
             load();
-            Toast.makeText(requireContext(), "已切换到《" + record.name + "》", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "已按《" + record.name + "》重新规划", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(requireContext(), "切换失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
         }

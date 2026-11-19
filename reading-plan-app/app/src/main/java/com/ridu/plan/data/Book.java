@@ -8,8 +8,10 @@ public class Book {
     public String stage = "";
     public String slot = "";
     public String mode = "通读";
-    public int days = 7;
+    public int days;
     public int pages = 300;
+    public double weight;
+    public int targetDailyPages;
     public String background = "";
     public String prerequisite = "";
 
@@ -19,6 +21,7 @@ public class Book {
     public int endDay;
 
     public int dailyPages() {
-        return Math.max(1, Math.round((float) pages / Math.max(1, days)));
+        if (days <= 0) return 0;
+        return Math.max(1, Math.round((float) pages / days));
     }
 }

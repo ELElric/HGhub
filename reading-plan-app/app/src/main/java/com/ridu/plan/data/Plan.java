@@ -51,24 +51,19 @@ public class Plan {
             b.stage = o.optString("stage", "").trim();
             b.slot = o.optString("slot", "").trim();
             b.mode = o.optString("mode", "通读").trim();
-            b.days = Math.max(1, o.optInt("days", 7));
+            b.days = Math.max(0, o.optInt("days", 0));
             b.pages = Math.max(1, o.optInt("pages", 300));
+            b.weight = o.optDouble("weight", 0);
+            b.targetDailyPages = Math.max(0, o.optInt("targetDailyPages", 0));
             b.background = o.optString("background", "暂无写作背景。").trim();
             b.prerequisite = o.optString("prerequisite", "暂无前置知识。").trim();
             b.startDay = cursor;
-            cursor += b.days;
-            b.endDay = cursor;
             plan.books.add(b);
         }
         if (plan.books.isEmpty()) {
             throw new JSONException("没有有效的书");
         }
-        plan.totalDays = Math.max(cursor, root.optInt("totalDays", cursor));
-        if (plan.totalDays > cursor) {
-            // 如果 totalDays 大于实际天数，把差额留给最后一本书之前的空档没有意义，
-            // 这里以实际书单天数为主，避免“永远读不完”。
-            plan.totalDays = cursor;
-        }
+        PlanScheduler.apply(plan, root.optJSONObject("algorithm"));
         return plan;
     }
 
